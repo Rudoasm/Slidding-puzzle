@@ -1,4 +1,11 @@
 
+// ASM AIMAN
+// 20220055
+
+
+//----------------------------------------------------------------------------------------------------------------------
+
+
 
 import java.io.BufferedReader;
 import java.io.FileNotFoundException;
@@ -12,7 +19,7 @@ public class Main {
     static Node finishtNode;
 
     public static void main(String[] args) {
-        map = mapReader("Mazes/maze10_3.txt");
+        map = mapReader("Mazes/maze30_2.txt");
         printMap(map);
     }
 
@@ -61,16 +68,16 @@ public class Main {
             //-----------------------------------------------------------------------
 
         } catch (FileNotFoundException e) {
-            System.out.println("The File you are looking for does not exist.");
+            System.out.println("The File does not exist.");
         } catch (IOException e) {
-            System.out.println("There was an error while reading from the File.");
+            System.out.println("An Error occured while reading the file.");
         }
 
         return map;
     }
     //------------------------------------------------------------------------------------------------------------------
 
-    // Printing a map represented using a 2D array----------------------------------------------------------------------
+    // Printing a map that is represented in a 2D array----------------------------------------------------------------------
     public static void printMap(char[][] map) {
         for (char[] charRow : map) {
             for (char character : charRow) {

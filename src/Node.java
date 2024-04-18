@@ -5,6 +5,7 @@ public class Node {
     private int yPosition;
     private int distance;
 
+//    constructor-1-----------------------------------------------------------------------------------------------------
     public Node(int x, int y) {
         this.prevNode = null;
         this.nextNode = null;
@@ -13,6 +14,7 @@ public class Node {
         this.distance = -1;
     }
 
+    //    constructor-2 -----------------------------------------------------------------------------------------------
     public Node(Node prevNode, Node nextNode, int x, int y, int distance) {
         this.prevNode = prevNode;
         this.nextNode = nextNode;
