@@ -30,25 +30,26 @@ public class Main {
         List<String> detailedSteps = new ArrayList<>();
         Node start = shortestPath.get(shortestPath.size() - 1);
         Node end = shortestPath.get(0);
-        detailedSteps.add("Start at (" + start.getX() + ", " + start.getY() + ")");
+        detailedSteps.add("Start at (" + (start.getX() + 1) + ", " + (start.getY() + 1) + ")");
 
         for (int i = shortestPath.size() - 1; i > 0; i--) {
             Node current = shortestPath.get(i);
             Node next = shortestPath.get(i - 1);
             if (next.getX() > current.getX()) {
-                detailedSteps.add("Move right to (" + next.getX() + ", " + next.getY() + ")");
+                detailedSteps.add("Move right to (" + (next.getX() + 1) + ", " + (next.getY() + 1) + ")");
             } else if (next.getX() < current.getX()) {
-                detailedSteps.add("Move left to (" + next.getX() + ", " + next.getY() + ")");
+                detailedSteps.add("Move left to (" + (next.getX() + 1) + ", " + (next.getY() + 1) + ")");
             } else if (next.getY() > current.getY()) {
-                detailedSteps.add("Move down to (" + next.getX() + ", " + next.getY() + ")");
+                detailedSteps.add("Move down to (" + (next.getX() + 1) + ", " + (next.getY() + 1) + ")");
             } else if (next.getY() < current.getY()) {
-                detailedSteps.add("Move up to (" + next.getX() + ", " + next.getY() + ")");
+                detailedSteps.add("Move up to (" + (next.getX() + 1) + ", " + (next.getY() + 1) + ")");
             }
         }
 
         detailedSteps.add("Done");
         return detailedSteps;
     }
+
 
     // Reading a map from an input text file----------------------------------------------------------------------------
     public static char[][] mapReader(String filePath) {
