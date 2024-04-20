@@ -46,7 +46,7 @@ public class Main {
             }
         }
 
-        detailedSteps.add("Done");
+        detailedSteps.add("Done!");
         return detailedSteps;
     }
 
@@ -111,7 +111,8 @@ public class Main {
     // Finding the shortest path between start and end positions--------------------------------------------------------
     public static List<Node> findShortestPath () {
 
-        //Creating Nodes for every valid positions and set their distances----
+        //Creating Nodes for every valid positions and set their distances----------------------------------------
+
         HashMap<Node, Integer> distances = new HashMap<>();
         for (int y = 0; y < map.length; y++){
             for (int x = 0; x < map[0].length; x++){
@@ -121,6 +122,7 @@ public class Main {
                     distances.put(node, 0);
                 } else if (map[y][x] != '0') {
                     distances.put(node, Integer.MAX_VALUE);
+//                    note: traditionally we assign infinity at the beginning and later update the distances in da.
                 }
             }
         }
@@ -135,7 +137,8 @@ public class Main {
         queue.add(startNode);
         //---------------------------------------------------------------------------------------
 
-        //Applying the Dijkstra Algorithm-------------------------------------
+        // Dijkstra Algorithm-------------------------------------
+
         while (!queue.isEmpty()) {
             //Getting the Node with the shortest distance and removing it from the queue. "poll()"
             Node currentNode = queue.poll();
@@ -160,7 +163,7 @@ public class Main {
             shortestPath.add(currentNode);
             currentNode = currentNode.getPrev();
         }
-//        Collections.reverse(shortestPath);
+
         //--------------------------------------------------------------------
 
         return shortestPath.isEmpty() ? null : shortestPath;
@@ -186,7 +189,7 @@ public class Main {
             }
             //--------------------------------------------------------------------------
 
-            //Adding the last valid position just before hitting a rock or border------------------------
+            //Adding the last valid position just before hitting a boulder------------------------
             newX -= direction[0];
             newY -= direction[1];
             int newDistance = distances.get(currentNode) + distanceTraveled;
