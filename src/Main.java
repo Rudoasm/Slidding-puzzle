@@ -11,7 +11,7 @@ public class Main {
     static Node finishNode;
 
     public static void main(String[] args) {
-        map = mapReader("Mazes/maze10_3.txt");
+        map = mapReader("Mazes/maze30_5.txt");
         printMap(map);
 
         List<Node> shortestPath = findShortestPath();
@@ -182,13 +182,19 @@ public class Main {
 
             //Keep moving until a rock is hit or at the end of the border of the map----
             while (locationIsValid(newX, newY) && map[newY][newX] != '0') {
-                //Moving to the next block of the same direction
-                newX += direction[0];
-                newY += direction[1];
-                distanceTraveled++;
+                if (map[newY][newX] == 'F') {
+                    //Moving to the next block of the same direction
+                    newX += direction[0];
+                    newY += direction[1];
+                    distanceTraveled++;
+                    break;
+                } else{
+                    newX += direction[0];
+                    newY += direction[1];
+                    distanceTraveled++;
+                }
+                //--------------------------------------------------------------------------
             }
-            //--------------------------------------------------------------------------
-
             //Adding the last valid position just before hitting a boulder------------------------
             newX -= direction[0];
             newY -= direction[1];
