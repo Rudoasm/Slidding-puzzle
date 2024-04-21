@@ -17,7 +17,9 @@ public class Main {
 
         List<Node> shortestPath = findShortestPath();
         if (shortestPath != null) {
-            System.out.println("Shortest path found. See below -V");
+            System.out.println("------------------------------------------------------------------------------");
+            System.out.println("Shortest path found. See below 🔽");
+            System.out.println("");
             List<String> detailedSteps = getDetailedSteps(shortestPath);
             for (int i = 0; i < detailedSteps.size(); i++) {
                 System.out.println((i + 1) + ". " + detailedSteps.get(i));
@@ -94,7 +96,7 @@ public class Main {
                     distances.put(node, 0);
                 } else if (map[y][x] != '0') {
                     distances.put(node, Integer.MAX_VALUE);
-//                    note: traditionally we assign infinity at the beginning and later update the distances in da.
+//                    note to self: traditionally we assign infinity at the beginning and later update the distances in da.
                 }
             }
         }
@@ -227,7 +229,7 @@ public class Main {
     public static void printMap(char[][] map) {
         for (char[] charRow : map) {
             for (char character : charRow) {
-                System.out.print(character);
+                System.out.print(character + " ");
             }
             System.out.println();
         }
