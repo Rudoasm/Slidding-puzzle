@@ -12,11 +12,12 @@ public class Main {
 
     public static void main(String[] args) {
         map = mapReader("Mazes/maze30_5.txt");
+//        change the map from here
         printMap(map);
 
         List<Node> shortestPath = findShortestPath();
         if (shortestPath != null) {
-            System.out.println("Shortest path found:");
+            System.out.println("Shortest path found. See below -V");
             List<String> detailedSteps = getDetailedSteps(shortestPath);
             for (int i = 0; i < detailedSteps.size(); i++) {
                 System.out.println((i + 1) + ". " + detailedSteps.get(i));
@@ -26,38 +27,16 @@ public class Main {
         }
     }
 
-    private static List<String> getDetailedSteps(List<Node> shortestPath) {
-        List<String> detailedSteps = new ArrayList<>();
-        Node start = shortestPath.get(shortestPath.size() - 1);
-        Node end = shortestPath.get(0);
-        detailedSteps.add("Start at (" + (start.getX() + 1) + ", " + (start.getY() + 1) + ")");
-
-        for (int i = shortestPath.size() - 1; i > 0; i--) {
-            Node current = shortestPath.get(i);
-            Node next = shortestPath.get(i - 1);
-            if (next.getX() > current.getX()) {
-                detailedSteps.add("Move right to (" + (next.getX() + 1) + ", " + (next.getY() + 1) + ")");
-            } else if (next.getX() < current.getX()) {
-                detailedSteps.add("Move left to (" + (next.getX() + 1) + ", " + (next.getY() + 1) + ")");
-            } else if (next.getY() > current.getY()) {
-                detailedSteps.add("Move down to (" + (next.getX() + 1) + ", " + (next.getY() + 1) + ")");
-            } else if (next.getY() < current.getY()) {
-                detailedSteps.add("Move up to (" + (next.getX() + 1) + ", " + (next.getY() + 1) + ")");
-            }
-        }
-
-        detailedSteps.add("Done!");
-        return detailedSteps;
-    }
 
 
-    // Reading a map from an input text file----------------------------------------------------------------------------
+    // Reading a map from an input text file
     public static char[][] mapReader(String filePath) {
         char[][] map = null;
         try {
             BufferedReader fileReader = new BufferedReader(new FileReader(filePath));
 
-            //Getting the dimensions of the map-------------------------------------
+            //Getting the dimensions of the map
+
             int rows = 0;
             int cols = 0;
             while (fileReader.readLine() != null) {
@@ -73,9 +52,10 @@ public class Main {
             fileReader.close();
 
             map = new char[rows][cols];
-            //----------------------------------------------------------------------
 
-            //Writing values into the map-------------------------------------------
+
+            //filling the maps with values
+
             fileReader = new BufferedReader(new FileReader(filePath));
             for (int y = 0; y < rows; y++) {
                 line = fileReader.readLine();
@@ -85,7 +65,7 @@ public class Main {
                 }
             }
             fileReader.close();
-            //----------------------------------------------------------------------
+
 
         } catch (FileNotFoundException e) {
             System.out.println("The File does not exist.");
@@ -95,23 +75,15 @@ public class Main {
 
         return map;
     }
-    //------------------------------------------------------------------------------------------------------------------
 
-    // Printing a map through a 2D array----------------------------------------------------------------------
-    public static void printMap(char[][] map) {
-        for (char[] charRow : map) {
-            for (char character : charRow) {
-                System.out.print(character);
-            }
-            System.out.println();
-        }
-    }
-    //------------------------------------------------------------------------------------------------------------------
 
-    // Finding the shortest path between start and end positions--------------------------------------------------------
+    // Printing a map through a 2D array
+
+
+    // Finding the shortest path between start and end positions
     public static List<Node> findShortestPath () {
 
-        //Creating Nodes for every valid positions and set their distances----------------------------------------
+        //Creating Nodes for every valid positions and set their distances
 
         HashMap<Node, Integer> distances = new HashMap<>();
         for (int y = 0; y < map.length; y++){
@@ -150,13 +122,13 @@ public class Main {
             }
             //-------------------------------------------------------
 
-            //Exploring the next possible Adjacent Nodes-------------
+            //Exploring the next possible Adjacent Nodes
             checkNextNodes(currentNode, distances, queue);
 
         }
 
 
-        //Creating the path---------------------------------------------------
+        //path created...
         List<Node> shortestPath = new ArrayList<>();
         Node currentNode = finishNode;
         while (currentNode != null) {
@@ -164,26 +136,57 @@ public class Main {
             currentNode = currentNode.getPrev();
         }
 
-        //--------------------------------------------------------------------
 
         return shortestPath.isEmpty() ? null : shortestPath;
     }
 
-    // Exploring the next possible Adjacent Nodes-----------------------------------------------------------------------
+    // To Check if a position is within the boundaries of the map or not.
+    private static boolean locationIsValid(int x, int y) {
+        return x >= 0 && x < map[0].length && y >= 0 && y < map.length;
+    }
+
+//    To get the detailed precise steps like move left/right/up/down from current position.
+
+    private static List<String> getDetailedSteps(List<Node> shortestPath) {
+        List<String> detailedSteps = new ArrayList<>();
+        Node start = shortestPath.get(shortestPath.size() - 1);
+        Node end = shortestPath.get(0);
+        detailedSteps.add("Start at (" + (start.getX() + 1) + ", " + (start.getY() + 1) + ")");
+
+        for (int i = shortestPath.size() - 1; i > 0; i--) {
+            Node current = shortestPath.get(i);
+            Node next = shortestPath.get(i - 1);
+            if (next.getX() > current.getX()) {
+                detailedSteps.add("Move right to (" + (next.getX() + 1) + ", " + (next.getY() + 1) + ")");
+            } else if (next.getX() < current.getX()) {
+                detailedSteps.add("Move left to (" + (next.getX() + 1) + ", " + (next.getY() + 1) + ")");
+            } else if (next.getY() > current.getY()) {
+                detailedSteps.add("Move down to (" + (next.getX() + 1) + ", " + (next.getY() + 1) + ")");
+            } else if (next.getY() < current.getY()) {
+                detailedSteps.add("Move up to (" + (next.getX() + 1) + ", " + (next.getY() + 1) + ")");
+            }
+        }
+
+        detailedSteps.add("Done!");
+        return detailedSteps;
+    }
+
+    // Exploring the available Adjacent Nodes
     private static void checkNextNodes(Node currentNode, HashMap<Node, Integer> distances, PriorityQueue<Node> queue) {
-        //A 2D array that stores all the possible directions (R, L, D, U) to be travelled from the current position
+        //A 2D array that stores all the possible directions that can be travelled from the current coordinate/position (up, right,left,down)
         int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
-        //Moving to all directions one block at a time------------------------
+        //Moving to all directions one block at a time
+
         for (int[] direction : directions) {
             int newX = currentNode.getX() + direction[0];
             int newY = currentNode.getY() + direction[1];
             int distanceTraveled = 0;
 
-            //Keep moving until a rock is hit or at the end of the border of the map----
+            //Keep moving until a rock is hit or at the end of the border of the map
             while (locationIsValid(newX, newY) && map[newY][newX] != '0') {
                 if (map[newY][newX] == 'F') {
-                    //Moving to the next block of the same direction
+                    //Moving to the next block in the the same direction
                     newX += direction[0];
                     newY += direction[1];
                     distanceTraveled++;
@@ -193,9 +196,9 @@ public class Main {
                     newY += direction[1];
                     distanceTraveled++;
                 }
-                //--------------------------------------------------------------------------
+
             }
-            //Adding the last valid position just before hitting a boulder------------------------
+            //Adding the last valid position just before hitting a boulder
             newX -= direction[0];
             newY -= direction[1];
             int newDistance = distances.get(currentNode) + distanceTraveled;
@@ -215,14 +218,18 @@ public class Main {
                 adjacentNode.setPrev(currentNode);
                 queue.add(adjacentNode);
             }
-            //-------------------------------------------------------------------------------------------
+
         }
     }
-    //------------------------------------------------------------------------------------------------------------------
 
-    // Checking if a position is within the boundaries of the map-------------------------------------------------------
-    private static boolean locationIsValid(int x, int y) {
-        return x >= 0 && x < map[0].length && y >= 0 && y < map.length;
+
+
+    public static void printMap(char[][] map) {
+        for (char[] charRow : map) {
+            for (char character : charRow) {
+                System.out.print(character);
+            }
+            System.out.println();
+        }
     }
-    //------------------------------------------------------------------------------------------------------------------
 }
