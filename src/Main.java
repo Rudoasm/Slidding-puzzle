@@ -2,7 +2,11 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.*;
+import java.util.Comparator;
+import java.util.HashMap;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.Map;
 
 public class Main {
 
@@ -12,7 +16,7 @@ public class Main {
 
     public static void main(String[] args) {
         map = mapReader("Mazes/maze30_5.txt");
-//        change the map from here
+        // Change the map from here
         printMap(map);
 
         List<Node> shortestPath = findShortestPath();
@@ -29,16 +33,13 @@ public class Main {
         }
     }
 
-
-
     // Reading a map from an input text file
     public static char[][] mapReader(String filePath) {
         char[][] map = null;
         try {
             BufferedReader fileReader = new BufferedReader(new FileReader(filePath));
 
-            //Getting the dimensions of the map
-
+            // Getting the dimensions of the map
             int rows = 0;
             int cols = 0;
             while (fileReader.readLine() != null) {
@@ -55,9 +56,7 @@ public class Main {
 
             map = new char[rows][cols];
 
-
-            //filling the maps with values
-
+            // Filling the maps with values
             fileReader = new BufferedReader(new FileReader(filePath));
             for (int y = 0; y < rows; y++) {
                 line = fileReader.readLine();
@@ -68,76 +67,58 @@ public class Main {
             }
             fileReader.close();
 
-
         } catch (FileNotFoundException e) {
             System.out.println("The File does not exist.");
         } catch (IOException e) {
-            System.out.println("An Error occured while reading the file.");
+            System.out.println("An Error occurred while reading the file.");
         }
 
         return map;
     }
 
-
-    // Printing a map through a 2D array
-
-
     // Finding the shortest path between start and end positions
-    public static List<Node> findShortestPath () {
+    public static List<Node> findShortestPath() {
 
-        //Creating Nodes for every valid positions and set their distances
-
+        // Creating Nodes for every valid position and set their distances
         HashMap<Node, Integer> distances = new HashMap<>();
-        for (int y = 0; y < map.length; y++){
-            for (int x = 0; x < map[0].length; x++){
+        for (int y = 0; y < map.length; y++) {
+            for (int x = 0; x < map[0].length; x++) {
                 Node node = new Node(x, y);
                 if (map[y][x] == 'S') {
                     startNode = node;
                     distances.put(node, 0);
                 } else if (map[y][x] != '0') {
                     distances.put(node, Integer.MAX_VALUE);
-//                    note to self: traditionally we assign infinity at the beginning and later update the distances in da.
                 }
             }
         }
-        //--------------------------------------------------------------------
 
-        //Creating a Priority Queue (Min-Heap) for storing Nodes to visit later------------------
-        /*
-        "Comparator.comparingInt(distances::get)" ensures that Nodes are arranged in the ascending order of the
-        distance from the starting position
-        */
-        PriorityQueue<Node> queue = new PriorityQueue<>(Comparator.comparingInt(distances::get));
+        // Creating a Priority Queue (Min-Heap) for storing Nodes for later visitations.
+        MinHeap<Node> queue = new MinHeap<>(1000, Comparator.comparingInt(distances::get));
         queue.add(startNode);
-        //---------------------------------------------------------------------------------------
 
-        // Dijkstra Algorithm-------------------------------------
-
+        // Dijkstra Algorithm
         while (!queue.isEmpty()) {
-            //Getting the Node with the shortest distance and removing it from the queue. "poll()"
+            // Getting the Node with the shortest distance and removing it from the queue
             Node currentNode = queue.poll();
 
-            //Checking if the Current Node is the Finish Node--------
+            // Checking if the Current Node is the Finish Node
             if (map[currentNode.getY()][currentNode.getX()] == 'F') {
                 finishNode = currentNode;
                 break;
             }
-            //-------------------------------------------------------
 
-            //Exploring the next possible Adjacent Nodes
+            // Exploring the next possible Adjacent Nodes
             checkNextNodes(currentNode, distances, queue);
-
         }
 
-
-        //path created...
+        // Path created
         List<Node> shortestPath = new ArrayList<>();
         Node currentNode = finishNode;
         while (currentNode != null) {
             shortestPath.add(currentNode);
             currentNode = currentNode.getPrev();
         }
-
 
         return shortestPath.isEmpty() ? null : shortestPath;
     }
@@ -147,12 +128,10 @@ public class Main {
         return x >= 0 && x < map[0].length && y >= 0 && y < map.length;
     }
 
-//    To get the detailed precise steps like move left/right/up/down from current position.
-
+    // To get the detailed precise steps like move left/right/up/down from the current position.
     private static List<String> getDetailedSteps(List<Node> shortestPath) {
         List<String> detailedSteps = new ArrayList<>();
         Node start = shortestPath.get(shortestPath.size() - 1);
-        Node end = shortestPath.get(0);
         detailedSteps.add("Start at (" + (start.getX() + 1) + ", " + (start.getY() + 1) + ")");
 
         for (int i = shortestPath.size() - 1; i > 0; i--) {
@@ -174,39 +153,38 @@ public class Main {
     }
 
     // Exploring the available Adjacent Nodes
-    private static void checkNextNodes(Node currentNode, HashMap<Node, Integer> distances, PriorityQueue<Node> queue) {
-        //A 2D array that stores all the possible directions that can be travelled from the current coordinate/position (up, right,left,down)
+    private static void checkNextNodes(Node currentNode, HashMap<Node, Integer> distances, MinHeap<Node> queue) {
+        // A 2D array that stores all the possible directions that can be traveled from the current coordinate/position (up, right, left, down)
         int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
-        //Moving to all directions one block at a time
-
+        // Moving to all directions one block at a time
         for (int[] direction : directions) {
             int newX = currentNode.getX() + direction[0];
             int newY = currentNode.getY() + direction[1];
             int distanceTraveled = 0;
 
-            //Keep moving until a rock is hit or at the end of the border of the map
+            // Keep moving until a rock is hit or at the end of the border of the map
             while (locationIsValid(newX, newY) && map[newY][newX] != '0') {
                 if (map[newY][newX] == 'F') {
-                    //Moving to the next block in the the same direction
+                    // Moving to the next block in the same direction
                     newX += direction[0];
                     newY += direction[1];
                     distanceTraveled++;
                     break;
-                } else{
+                } else {
                     newX += direction[0];
                     newY += direction[1];
                     distanceTraveled++;
                 }
-
             }
-            //Adding the last valid position just before hitting a boulder
+
+            // Adding the last valid position just before hitting a boulder
             newX -= direction[0];
             newY -= direction[1];
             int newDistance = distances.get(currentNode) + distanceTraveled;
 
             Node adjacentNode = null;
-            //Finding the node with the same coordinates if it exists in the distances map
+            // Finding the node with the same coordinates if it exists in the distances map
             for (Map.Entry<Node, Integer> entry : distances.entrySet()) {
                 Node node = entry.getKey();
                 if (node.getX() == newX && node.getY() == newY) {
@@ -220,12 +198,10 @@ public class Main {
                 adjacentNode.setPrev(currentNode);
                 queue.add(adjacentNode);
             }
-
         }
     }
 
-
-
+    // Printing a map through a 2D array
     public static void printMap(char[][] map) {
         for (char[] charRow : map) {
             for (char character : charRow) {
