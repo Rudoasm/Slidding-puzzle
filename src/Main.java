@@ -2,11 +2,9 @@ import java.io.BufferedReader;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
-import java.util.Comparator;
-import java.util.HashMap;
-import java.util.List;
 import java.util.ArrayList;
-import java.util.Map;
+import java.util.Comparator;
+import java.util.List;
 
 public class Main {
 
@@ -15,11 +13,14 @@ public class Main {
     static Node finishNode;
 
     public static void main(String[] args) {
-        map = mapReader("Mazes/maze30_5.txt");
+        map = mapReader("C:\\algo\\ASMaiman_20220055\\BM\\benchmark_series\\puzzle_10.txt");
         // Change the map from here
-        printMap(map);
+        displayMap(map);
 
-        List<Node> shortestPath = findShortestPath();
+        // Start Time
+        long startTime = System.currentTimeMillis();
+
+        List<Node> shortestPath = findShortestPathBetweenNodes();
         if (shortestPath != null) {
             System.out.println("------------------------------------------------------------------------------");
             System.out.println("Shortest path found. See below 🔽");
@@ -31,6 +32,11 @@ public class Main {
         } else {
             System.out.println("No path found.");
         }
+        long endTime = System.currentTimeMillis();
+
+        // Run Time
+        long runTime = endTime - startTime;
+        System.out.println("\nTime taken for the algorithm to come across the shortest path: " + runTime + " milliseconds.");
     }
 
     // Reading a map from an input text file
@@ -77,24 +83,23 @@ public class Main {
     }
 
     // Finding the shortest path between start and end positions
-    public static List<Node> findShortestPath() {
+    public static List<Node> findShortestPathBetweenNodes() {
 
         // Creating Nodes for every valid position and set their distances
-        HashMap<Node, Integer> distances = new HashMap<>();
+        int[][] distances = new int[map.length][map[0].length];
         for (int y = 0; y < map.length; y++) {
             for (int x = 0; x < map[0].length; x++) {
-                Node node = new Node(x, y);
                 if (map[y][x] == 'S') {
-                    startNode = node;
-                    distances.put(node, 0);
+                    startNode = new Node(x, y);
+                    distances[y][x] = 0;
                 } else if (map[y][x] != '0') {
-                    distances.put(node, Integer.MAX_VALUE);
+                    distances[y][x] = Integer.MAX_VALUE;
                 }
             }
         }
 
         // Creating a Priority Queue (Min-Heap) for storing Nodes for later visitations.
-        MinHeap<Node> queue = new MinHeap<>(1000, Comparator.comparingInt(distances::get));
+        MinHeap<Node> queue = new MinHeap<>(1000, Comparator.comparingInt(node -> distances[node.getY()][node.getX()]));
         queue.add(startNode);
 
         // Dijkstra Algorithm
@@ -153,7 +158,7 @@ public class Main {
     }
 
     // Exploring the available Adjacent Nodes
-    private static void checkNextNodes(Node currentNode, HashMap<Node, Integer> distances, MinHeap<Node> queue) {
+    private static void checkNextNodes(Node currentNode, int[][] distances, MinHeap<Node> queue) {
         // A 2D array that stores all the possible directions that can be traveled from the current coordinate/position (up, right, left, down)
         int[][] directions = {{0, 1}, {0, -1}, {1, 0}, {-1, 0}};
 
@@ -178,31 +183,22 @@ public class Main {
                 }
             }
 
-            // Adding the last valid position just before hitting a boulder
+            // Adding the last valid position just before hitting a boulder or "0"
             newX -= direction[0];
             newY -= direction[1];
-            int newDistance = distances.get(currentNode) + distanceTraveled;
+            int newDistance = distances[currentNode.getY()][currentNode.getX()] + distanceTraveled;
 
-            Node adjacentNode = null;
-            // Finding the node with the same coordinates if it exists in the distances map
-            for (Map.Entry<Node, Integer> entry : distances.entrySet()) {
-                Node node = entry.getKey();
-                if (node.getX() == newX && node.getY() == newY) {
-                    adjacentNode = node;
-                    break;
-                }
-            }
-
-            if (adjacentNode != null && newDistance < distances.get(adjacentNode)) {
-                distances.put(adjacentNode, newDistance);
-                adjacentNode.setPrev(currentNode);
-                queue.add(adjacentNode);
+            if (newDistance < distances[newY][newX]) {
+                distances[newY][newX] = newDistance;
+                Node nextNode = new Node(newX, newY);
+                nextNode.setPrev(currentNode);
+                queue.add(nextNode);
             }
         }
     }
 
     // Printing a map through a 2D array
-    public static void printMap(char[][] map) {
+    public static void displayMap(char[][] map) {
         for (char[] charRow : map) {
             for (char character : charRow) {
                 System.out.print(character + " ");
